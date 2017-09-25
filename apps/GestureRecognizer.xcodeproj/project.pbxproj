@@ -16,6 +16,7 @@
 		66D8C6101F1BCBB200DD0730 /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D8C6061F19778600DD0730 /* RootViewController.swift */; };
 		66D8C6121F1BCC0400DD0730 /* ComplexGestureInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D8C60A1F1977B000DD0730 /* ComplexGestureInput.swift */; };
 		66D8C6131F1BCC0600DD0730 /* FlatTapRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D8C60B1F1977B000DD0730 /* FlatTapRecognizer.swift */; };
+		66D90F751F78871E007F3E57 /* Differentiator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D90F741F78871E007F3E57 /* Differentiator.framework */; };
 		66E6D3491F1E7D6600BEDE5B /* GestureModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 66E6D3481F1E7D6100BEDE5B /* GestureModel.mlmodel */; };
 		66E6D3521F1E800E00BEDE5B /* Label+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E6D3511F1E7FE800BEDE5B /* Label+Extensions.swift */; };
 		66E6D3531F1E801200BEDE5B /* touches.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E6D34F1F1E7FE800BEDE5B /* touches.pb.swift */; };
@@ -53,6 +54,7 @@
 		66D8C6061F19778600DD0730 /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		66D8C60A1F1977B000DD0730 /* ComplexGestureInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexGestureInput.swift; sourceTree = "<group>"; };
 		66D8C60B1F1977B000DD0730 /* FlatTapRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlatTapRecognizer.swift; sourceTree = "<group>"; };
+		66D90F741F78871E007F3E57 /* Differentiator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Differentiator.framework; path = Carthage/Build/iOS/Differentiator.framework; sourceTree = "<group>"; };
 		66E6D3481F1E7D6100BEDE5B /* GestureModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = GestureModel.mlmodel; sourceTree = "<group>"; };
 		66E6D34F1F1E7FE800BEDE5B /* touches.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = touches.pb.swift; sourceTree = "<group>"; };
 		66E6D3501F1E7FE800BEDE5B /* touches.proto */ = {isa = PBXFileReference; lastKnownFileType = text; path = touches.proto; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				66F98AE31F39569200513CB1 /* RxSwift.framework in Frameworks */,
 				66F98AE41F39569200513CB1 /* SnapKit.framework in Frameworks */,
 				66F98AE51F39569200513CB1 /* SwiftProtobuf.framework in Frameworks */,
+				66D90F751F78871E007F3E57 /* Differentiator.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +93,7 @@
 		66B984ED1F156FB000A64D3B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				66D90F741F78871E007F3E57 /* Differentiator.framework */,
 				66F98AD81F39564300513CB1 /* HEXColor.framework */,
 				66F98AD91F39564300513CB1 /* RxCocoa.framework */,
 				66F98ADA1F39564300513CB1 /* RxDataSources.framework */,
@@ -255,6 +259,7 @@
 				"$(SRCROOT)/GestureRecognizer/Carthage/Build/iOS/HEXColor.framework",
 				"$(SRCROOT)/GestureRecognizer/Carthage/Build/iOS/RxDataSources.framework",
 				"$(SRCROOT)/GestureRecognizer/Carthage/Build/iOS/SwiftProtobuf.framework",
+				"$(SRCROOT)/GestureRecognizer/Carthage/Build/iOS/Differentiator.framework",
 			);
 			name = "Run Script";
 			outputPaths = (
@@ -264,6 +269,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/HEXColor.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxDataSources.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwiftProtobuf.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Differentiator.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

@@ -17,6 +17,7 @@
 		66C905531F01743500B903C9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C905521F01743500B903C9 /* AppDelegate.swift */; };
 		66C9055A1F01743500B903C9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C905591F01743500B903C9 /* Assets.xcassets */; };
 		66C9055D1F01743500B903C9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 66C9055B1F01743500B903C9 /* LaunchScreen.storyboard */; };
+		66D90F771F78875E007F3E57 /* Differentiator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D90F761F78875E007F3E57 /* Differentiator.framework */; };
 		66E6D3571F1E808A00BEDE5B /* touches.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E6D3551F1E808400BEDE5B /* touches.pb.swift */; };
 		66F98ADB1F39568C00513CB1 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66F98AD21F39562800513CB1 /* RxCocoa.framework */; };
 		66F98ADC1F39568C00513CB1 /* RxDataSources.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66F98AD11F39562800513CB1 /* RxDataSources.framework */; };
@@ -51,6 +52,7 @@
 		66C905591F01743500B903C9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		66C9055C1F01743500B903C9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		66C9055E1F01743500B903C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		66D90F761F78875E007F3E57 /* Differentiator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Differentiator.framework; path = Carthage/Build/iOS/Differentiator.framework; sourceTree = "<group>"; };
 		66E6D3551F1E808400BEDE5B /* touches.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = touches.pb.swift; sourceTree = "<group>"; };
 		66E6D3561F1E808400BEDE5B /* touches.proto */ = {isa = PBXFileReference; lastKnownFileType = text; path = touches.proto; sourceTree = "<group>"; };
 		66F98AD01F39562800513CB1 /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = GestureInput/Carthage/Build/iOS/SnapKit.framework; sourceTree = SOURCE_ROOT; };
@@ -70,6 +72,7 @@
 				66F98ADD1F39568C00513CB1 /* RxSwift.framework in Frameworks */,
 				66F98ADE1F39568C00513CB1 /* SnapKit.framework in Frameworks */,
 				66F98ADF1F39568C00513CB1 /* SwiftProtobuf.framework in Frameworks */,
+				66D90F771F78875E007F3E57 /* Differentiator.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +82,7 @@
 		4546FAA10B5077F620820EFA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				66D90F761F78875E007F3E57 /* Differentiator.framework */,
 				66F98AD21F39562800513CB1 /* RxCocoa.framework */,
 				66F98AD11F39562800513CB1 /* RxDataSources.framework */,
 				66F98AD31F39562900513CB1 /* RxSwift.framework */,
@@ -225,6 +229,7 @@
 				"$(SRCROOT)/GestureInput/Carthage/Build/iOS/SnapKit.framework",
 				"$(SRCROOT)/GestureInput/Carthage/Build/iOS/RxDataSources.framework",
 				"$(SRCROOT)/GestureInput/Carthage/Build/iOS/SwiftProtobuf.framework",
+				"$(SRCROOT)/GestureInput/Carthage/Build/iOS/Differentiator.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
@@ -232,6 +237,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SnapKit.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxDataSources.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwiftProtobuf.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Differentiator.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

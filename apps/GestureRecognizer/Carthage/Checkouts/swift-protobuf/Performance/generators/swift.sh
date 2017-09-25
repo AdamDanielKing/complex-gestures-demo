@@ -27,11 +27,18 @@ function print_swift_set_field() {
       echo "    }"
       ;;
     repeated\ bool)
-      echo "    message.field$num = [true, false, true, false, true, false, true, false]"
+      echo "    for _ in 0..<repeatedCount {"
+      echo "      message.field$num.append(true)"
+      echo "    }"
       ;;
     repeated\ string)
       echo "    for _ in 0..<repeatedCount {"
       echo "      message.field$num.append(\"$((200+num))\")"
+      echo "    }"
+      ;;
+    repeated\ enum)
+      echo "    for _ in 0..<repeatedCount {"
+      echo "      message.field$num.append(.foo)"
       echo "    }"
       ;;
     repeated\ *)
@@ -47,6 +54,9 @@ function print_swift_set_field() {
       ;;
     string)
       echo "    message.field$num = \"$((200+num))\""
+      ;;
+    enum)
+      echo "    message.field$num = .foo"
       ;;
     *)
       echo "    message.field$num = $((200+num))"

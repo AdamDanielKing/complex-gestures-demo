@@ -12,38 +12,37 @@ import CoreLocation
     import RxCocoa
 #endif
 
-class RxCLLocationManagerDelegateProxy : DelegateProxy
-                                       , CLLocationManagerDelegate
-                                       , DelegateProxyType {
-    
-    static var factory = DelegateProxyFactory { (parentObject: CLLocationManager) in
-        RxCLLocationManagerDelegateProxy(parentObject: parentObject)
+public class RxCLLocationManagerDelegateProxy
+    : DelegateProxy<CLLocationManager, CLLocationManagerDelegate>
+    , DelegateProxyType
+    , CLLocationManagerDelegate {
+
+    public init(parentObject: CLLocationManager) {
+        super.init(parentObject: parentObject, delegateProxy: RxCLLocationManagerDelegateProxy.self)
+    }
+
+    public static func registerKnownImplementations() {
+        self.register { RxCLLocationManagerDelegateProxy(parentObject: $0) }
     }
 
     internal lazy var didUpdateLocationsSubject = PublishSubject<[CLLocation]>()
     internal lazy var didFailWithErrorSubject = PublishSubject<Error>()
 
-    class func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
-        let locationManager: CLLocationManager = object as! CLLocationManager
-        return locationManager.delegate
+    public class func currentDelegate(for object: ParentObject) -> CLLocationManagerDelegate? {
+        return object.delegate
     }
 
-    class func setCurrentDelegate(_ delegate: AnyObject?, toObject object: AnyObject) {
-        let locationManager: CLLocationManager = object as! CLLocationManager
-        if let delegate = delegate {
-            locationManager.delegate = (delegate as! CLLocationManagerDelegate)
-        } else {
-            locationManager.delegate = nil
-        }
+    public class func setCurrentDelegate(_ delegate: CLLocationManagerDelegate?, to object: ParentObject) {
+        object.delegate = delegate
     }
 
     public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        _forwardToDelegate?.locationManager(manager, didUpdateLocations: locations)
+        _forwardToDelegate?.locationManager?(manager, didUpdateLocations: locations)
         didUpdateLocationsSubject.onNext(locations)
     }
 
     public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        _forwardToDelegate?.locationManager(manager, didFailWithError: error)
+        _forwardToDelegate?.locationManager?(manager, didFailWithError: error)
         didFailWithErrorSubject.onNext(error)
     }
 

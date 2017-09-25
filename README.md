@@ -15,12 +15,12 @@ File layout:
 
 ## Setup
 
-Since GestureRecognizer requires iOS 11, you'll need to have Xcode 9 beta set up and a device running iOS 11 beta.
+Since GestureRecognizer requires iOS 11, you'll need to have Xcode 9 set up and a device running iOS 11.
 
 Set up GestureInput and GestureRecognizer:
 ```
 # Make sure Xcode 9 is selected.
-# sudo xcode-select -s /Applications/Xcode-beta.app/Contents/Developer
+# sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 cd apps/GestureInput
 carthage bootstrap --platform iOS

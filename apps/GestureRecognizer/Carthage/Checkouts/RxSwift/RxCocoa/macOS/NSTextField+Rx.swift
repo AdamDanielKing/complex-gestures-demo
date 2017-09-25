@@ -16,16 +16,10 @@ import RxSwift
 /// Delegate proxy for `NSTextField`.
 ///
 /// For more information take a look at `DelegateProxyType`.
-public class RxTextFieldDelegateProxy
-    : DelegateProxy
-    , NSTextFieldDelegate
-    , DelegateProxyType {
-    
-    public static var factory = DelegateProxyFactory { (parentObject: NSTextField) in
-        RxTextFieldDelegateProxy(parentObject: parentObject)
-    }
-
-    fileprivate let textSubject = PublishSubject<String?>()
+open class RxTextFieldDelegateProxy
+    : DelegateProxy<NSTextField, NSTextFieldDelegate>
+    , DelegateProxyType 
+    , NSTextFieldDelegate {
 
     /// Typed parent object.
     public weak private(set) var textField: NSTextField?
@@ -33,32 +27,36 @@ public class RxTextFieldDelegateProxy
     /// Initializes `RxTextFieldDelegateProxy`
     ///
     /// - parameter parentObject: Parent object for delegate proxy.
-    public required init(parentObject: AnyObject) {
-        self.textField = castOrFatalError(parentObject)
-        super.init(parentObject: parentObject)
+    init(parentObject: NSTextField) {
+        self.textField = parentObject
+        super.init(parentObject: parentObject, delegateProxy: RxTextFieldDelegateProxy.self)
     }
+
+    public static func registerKnownImplementations() {
+        self.register { RxTextFieldDelegateProxy(parentObject: $0) }
+    }
+
+    fileprivate let textSubject = PublishSubject<String?>()
 
     // MARK: Delegate methods
 
-    public override func controlTextDidChange(_ notification: Notification) {
+    open override func controlTextDidChange(_ notification: Notification) {
         let textField: NSTextField = castOrFatalError(notification.object)
         let nextValue = textField.stringValue
         self.textSubject.on(.next(nextValue))
-        _forwardToDelegate?.controlTextDidChange(notification)
+        _forwardToDelegate?.controlTextDidChange?(notification)
     }
 
     // MARK: Delegate proxy methods
 
     /// For more information take a look at `DelegateProxyType`.
-    public class func currentDelegateFor(_ object: AnyObject) -> AnyObject? {
-        let textField: NSTextField = castOrFatalError(object)
-        return textField.delegate
+    open class func currentDelegate(for object: ParentObject) -> NSTextFieldDelegate? {
+        return object.delegate
     }
 
     /// For more information take a look at `DelegateProxyType`.
-    public class func setCurrentDelegate(_ delegate: AnyObject?, toObject object: AnyObject) {
-        let textField: NSTextField = castOrFatalError(object)
-        textField.delegate = castOptionalOrFatalError(delegate)
+    open class func setCurrentDelegate(_ delegate: NSTextFieldDelegate?, to object: ParentObject) {
+        object.delegate = delegate
     }
     
 }
@@ -68,19 +66,19 @@ extension Reactive where Base: NSTextField {
     /// Reactive wrapper for `delegate`.
     ///
     /// For more information take a look at `DelegateProxyType` protocol documentation.
-    public var delegate: DelegateProxy {
-        return RxTextFieldDelegateProxy.proxyForObject(base)
+    public var delegate: DelegateProxy<NSTextField, NSTextFieldDelegate> {
+        return RxTextFieldDelegateProxy.proxy(for: base)
     }
     
     /// Reactive wrapper for `text` property.
     public var text: ControlProperty<String?> {
-        let delegate = RxTextFieldDelegateProxy.proxyForObject(base)
+        let delegate = RxTextFieldDelegateProxy.proxy(for: base)
         
         let source = Observable.deferred { [weak textField = self.base] in
             delegate.textSubject.startWith(textField?.stringValue)
         }.takeUntil(deallocated)
 
-        let observer = UIBindingObserver(UIElement: base) { (control, value: String?) in
+        let observer = Binder(base) { (control, value: String?) in
             control.stringValue = value ?? ""
         }
 

@@ -14,9 +14,13 @@
 #endif
    import UIKit
 
-public class RxImagePickerDelegateProxy
-    : RxNavigationControllerDelegateProxy {
-    
+open class RxImagePickerDelegateProxy
+    : RxNavigationControllerDelegateProxy, UIImagePickerControllerDelegate {
+
+    public init(parentObject: UIImagePickerController) {
+        super.init(parentObject: parentObject)
+    }
+
 }
 
 #endif

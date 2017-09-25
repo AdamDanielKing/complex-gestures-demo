@@ -54,8 +54,10 @@ private let asciiUpperE = UInt8(ascii: "E")
 private let asciiLowerF = UInt8(ascii: "f")
 private let asciiUpperF = UInt8(ascii: "F")
 private let asciiLowerI = UInt8(ascii: "i")
+private let asciiLowerL = UInt8(ascii: "l")
 private let asciiLowerN = UInt8(ascii: "n")
 private let asciiLowerR = UInt8(ascii: "r")
+private let asciiLowerS = UInt8(ascii: "s")
 private let asciiLowerT = UInt8(ascii: "t")
 private let asciiUpperT = UInt8(ascii: "T")
 private let asciiLowerU = UInt8(ascii: "u")
@@ -70,10 +72,10 @@ private func fromHexDigit(_ c: UInt8) -> UInt8? {
     return c - asciiZero
   }
   if c >= asciiUpperA && c <= asciiUpperF {
-      return c - asciiUpperA + 10
+      return c - asciiUpperA + UInt8(10)
   }
   if c >= asciiLowerA && c <= asciiLowerF {
-      return c - asciiLowerA + 10
+      return c - asciiLowerA + UInt8(10)
   }
   return nil
 }
@@ -216,7 +218,10 @@ internal struct TextFormatScanner {
         }
     }
 
-    private mutating func parseIdentifier() -> String? {
+    /// Return a buffer containing the raw UTF8 for an identifier.
+    /// Assumes that you already know the current byte is a valid
+    /// start of identifier.
+    private mutating func parseUTF8Identifier() -> UnsafeBufferPointer<UInt8> {
         let start = p
         loop: while p != end {
             let c = p[0]
@@ -230,9 +235,17 @@ internal struct TextFormatScanner {
                 break loop
             }
         }
-        let s = utf8ToString(bytes: start, count: p - start)
+        let s = UnsafeBufferPointer(start: start, count: p - start)
         skipWhitespace()
         return s
+    }
+
+    /// Return a String containing the next identifier.
+    private mutating func parseIdentifier() -> String {
+        let buff = parseUTF8Identifier()
+        let s = utf8ToString(bytes: buff.baseAddress!, count: buff.count)
+        // Force-unwrap is OK:  we never have invalid UTF8 at this point.
+        return s!
     }
 
     /// Parse the rest of an [extension_field_name] in the input, assuming the
@@ -519,10 +532,8 @@ internal struct TextFormatScanner {
                     return n // not a digit
                 }
                 let val = UInt64(digit - asciiZero)
-                if n >= UInt64.max / 10 {
-                    if n > UInt64.max / 10 || val > UInt64.max % 10 {
-                        throw TextFormatDecodingError.malformedNumber
-                    }
+                if n > UInt64.max / 10 || n * 10 > UInt64.max - val {
+                    throw TextFormatDecodingError.malformedNumber
                 }
                 p += 1
                 n = n * 10 + val
@@ -711,6 +722,20 @@ internal struct TextFormatScanner {
         return d
     }
 
+    // Skip specified characters if they all match
+    private mutating func skipOptionalCharacters(bytes: [UInt8]) {
+        let start = p
+        for b in bytes {
+            if p == end || p[0] != b {
+                p = start
+                return
+            }
+            p += 1
+        }
+    }
+
+    // Skip following keyword if it matches (case-insensitively)
+    // the given keyword (specified as a series of bytes).
     private mutating func skipOptionalKeyword(bytes: [UInt8]) -> Bool {
         let start = p
         for b in bytes {
@@ -808,41 +833,60 @@ internal struct TextFormatScanner {
             throw TextFormatDecodingError.malformedText
         }
         let c = p[0]
+        p += 1
+        let result: Bool
         switch c {
-        case asciiZero, asciiOne, asciiLowerF, asciiUpperF, asciiLowerT, asciiUpperT:
-            if let s = parseIdentifier() {
-                switch s {
-                case "0", "f", "false", "False":
-                    return false
-                case "1", "t", "true", "True":
-                    return true
-                default:
-                    break
-                }
+        case asciiZero:
+            result = false
+        case asciiOne:
+            result = true
+        case asciiLowerF, asciiUpperF:
+            if p != end {
+                let alse = [asciiLowerA, asciiLowerL, asciiLowerS, asciiLowerE]
+                skipOptionalCharacters(bytes: alse)
             }
+            result = false
+        case asciiLowerT, asciiUpperT:
+            if p != end {
+                let rue = [asciiLowerR, asciiLowerU, asciiLowerE]
+                skipOptionalCharacters(bytes: rue)
+            }
+            result = true
         default:
-            break
+            throw TextFormatDecodingError.malformedText
         }
-        throw TextFormatDecodingError.malformedText
+        if p == end {
+            return result
+        }
+        switch p[0] {
+        case asciiSpace,
+             asciiTab,
+             asciiNewLine,
+             asciiCarriageReturn,
+             asciiHash,
+             asciiComma,
+             asciiSemicolon,
+             asciiCloseSquareBracket,
+             asciiCloseCurlyBracket,
+             asciiCloseAngleBracket:
+            skipWhitespace()
+            return result
+        default:
+            throw TextFormatDecodingError.malformedText
+        }
     }
 
-    internal mutating func nextOptionalEnumName() throws -> String? {
+    internal mutating func nextOptionalEnumName() throws -> UnsafeBufferPointer<UInt8>? {
         skipWhitespace()
         if p == end {
             throw TextFormatDecodingError.malformedText
         }
-        let c = p[0]
-        let start = p
-        switch c {
+        switch p[0] {
         case asciiLowerA...asciiLowerZ, asciiUpperA...asciiUpperZ:
-            if let s = parseIdentifier() {
-                return s
-            }
+            return parseUTF8Identifier()
         default:
-            break
+            return nil
         }
-        p = start
-        return nil
     }
 
     /// Any URLs are syntactically (almost) identical to extension
@@ -903,11 +947,7 @@ internal struct TextFormatScanner {
         case asciiLowerA...asciiLowerZ,
              asciiUpperA...asciiUpperZ,
              asciiOne...asciiNine: // a...z, A...Z, 1...9
-            if let s = parseIdentifier() {
-                return s
-            } else {
-                throw TextFormatDecodingError.malformedText
-            }
+            return parseIdentifier()
         default:
             throw TextFormatDecodingError.malformedText
         }
@@ -931,28 +971,13 @@ internal struct TextFormatScanner {
         switch c {
         case asciiLowerA...asciiLowerZ,
              asciiUpperA...asciiUpperZ: // a...z, A...Z
-            let start = p
-            p += 1
-            scanKeyLoop: while p != end {
-                let c = p[0]
-                switch c {
-                case asciiLowerA...asciiLowerZ,
-                     asciiUpperA...asciiUpperZ,
-                     asciiZero...asciiNine,
-                     asciiUnderscore: // a...z, A...Z, 0...9, _
-                    p += 1
-                default:
-                    break scanKeyLoop
-                }
-            }
-            let key = UnsafeBufferPointer(start: start, count: p - start)
-            skipWhitespace()
+            let key = parseUTF8Identifier()
             if let fieldNumber = names.number(forProtoName: key) {
                 return fieldNumber
             } else {
                 throw TextFormatDecodingError.unknownField
             }
-        case asciiOne...asciiNine:  // 1-9 (field numbers should be 0123, just 123)
+        case asciiOne...asciiNine:  // 1-9 (field numbers are 123, not 0123)
             var fieldNum = Int(c) - Int(asciiZero)
             p += 1
             while p != end {

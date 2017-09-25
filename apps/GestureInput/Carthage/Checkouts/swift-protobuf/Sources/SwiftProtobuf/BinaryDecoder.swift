@@ -238,7 +238,7 @@ internal struct BinaryDecoder: Decoder {
                 if bodyBytes % itemSize != 0 || itemCount > UInt64(Int.max) {
                     throw BinaryDecodingError.truncated
                 }
-                value.reserveCapacity(value.count + Int(extendingOrTruncating: itemCount))
+                value.reserveCapacity(value.count + Int(truncatingIfNeeded: itemCount))
                 for _ in 1...itemCount {
                     value.append(try decodeFloat())
                 }
@@ -279,7 +279,7 @@ internal struct BinaryDecoder: Decoder {
                 if bodyBytes % itemSize != 0 || itemCount > UInt64(Int.max) {
                     throw BinaryDecodingError.truncated
                 }
-                value.reserveCapacity(value.count + Int(extendingOrTruncating: itemCount))
+                value.reserveCapacity(value.count + Int(truncatingIfNeeded: itemCount))
                 for _ in 1...itemCount {
                     let i = try decodeDouble()
                     value.append(i)
@@ -296,7 +296,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        value = Int32(extendingOrTruncating: varint)
+        value = Int32(truncatingIfNeeded: varint)
         consumed = true
     }
 
@@ -305,7 +305,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        value = Int32(extendingOrTruncating: varint)
+        value = Int32(truncatingIfNeeded: varint)
         consumed = true
     }
 
@@ -313,15 +313,17 @@ internal struct BinaryDecoder: Decoder {
         switch fieldWireFormat {
         case WireFormat.varint:
             let varint = try decodeVarint()
-            value.append(Int32(extendingOrTruncating: varint))
+            value.append(Int32(truncatingIfNeeded: varint))
             consumed = true
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let varint = try decoder.decodeVarint()
-                value.append(Int32(extendingOrTruncating: varint))
+                value.append(Int32(truncatingIfNeeded: varint))
             }
             consumed = true
         default:
@@ -356,6 +358,8 @@ internal struct BinaryDecoder: Decoder {
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let varint = try decoder.decodeVarint()
@@ -372,7 +376,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        value = UInt32(extendingOrTruncating: varint)
+        value = UInt32(truncatingIfNeeded: varint)
         consumed = true
     }
 
@@ -381,7 +385,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        value = UInt32(extendingOrTruncating: varint)
+        value = UInt32(truncatingIfNeeded: varint)
         consumed = true
     }
 
@@ -389,15 +393,17 @@ internal struct BinaryDecoder: Decoder {
         switch fieldWireFormat {
         case WireFormat.varint:
             let varint = try decodeVarint()
-            value.append(UInt32(extendingOrTruncating: varint))
+            value.append(UInt32(truncatingIfNeeded: varint))
             consumed = true
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let t = try decoder.decodeVarint()
-                value.append(UInt32(extendingOrTruncating: t))
+                value.append(UInt32(truncatingIfNeeded: t))
             }
             consumed = true
         default:
@@ -430,6 +436,8 @@ internal struct BinaryDecoder: Decoder {
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let t = try decoder.decodeVarint()
@@ -446,7 +454,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        let t = UInt32(extendingOrTruncating: varint)
+        let t = UInt32(truncatingIfNeeded: varint)
         value = ZigZag.decoded(t)
         consumed = true
     }
@@ -456,7 +464,7 @@ internal struct BinaryDecoder: Decoder {
             return
         }
         let varint = try decodeVarint()
-        let t = UInt32(extendingOrTruncating: varint)
+        let t = UInt32(truncatingIfNeeded: varint)
         value = ZigZag.decoded(t)
         consumed = true
     }
@@ -465,16 +473,18 @@ internal struct BinaryDecoder: Decoder {
         switch fieldWireFormat {
         case WireFormat.varint:
             let varint = try decodeVarint()
-            let t = UInt32(extendingOrTruncating: varint)
+            let t = UInt32(truncatingIfNeeded: varint)
             value.append(ZigZag.decoded(t))
             consumed = true
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let varint = try decoder.decodeVarint()
-                let t = UInt32(extendingOrTruncating: varint)
+                let t = UInt32(truncatingIfNeeded: varint)
                 value.append(ZigZag.decoded(t))
             }
             consumed = true
@@ -510,6 +520,8 @@ internal struct BinaryDecoder: Decoder {
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let varint = try decoder.decodeVarint()
@@ -718,6 +730,8 @@ internal struct BinaryDecoder: Decoder {
         case WireFormat.lengthDelimited:
             var n: Int = 0
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var decoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !decoder.complete {
                 let t = try decoder.decodeVarint()
@@ -810,7 +824,7 @@ internal struct BinaryDecoder: Decoder {
              return
          }
         let varint = try decodeVarint()
-        if let v = E(rawValue: Int(Int32(extendingOrTruncating: varint))) {
+        if let v = E(rawValue: Int(Int32(truncatingIfNeeded: varint))) {
             value = v
             consumed = true
         }
@@ -821,7 +835,7 @@ internal struct BinaryDecoder: Decoder {
              return
         }
         let varint = try decodeVarint()
-        if let v = E(rawValue: Int(Int32(extendingOrTruncating: varint))) {
+        if let v = E(rawValue: Int(Int32(truncatingIfNeeded: varint))) {
             value = v
             consumed = true
         }
@@ -831,7 +845,7 @@ internal struct BinaryDecoder: Decoder {
         switch fieldWireFormat {
         case WireFormat.varint:
             let varint = try decodeVarint()
-            if let v = E(rawValue: Int(Int32(extendingOrTruncating: varint))) {
+            if let v = E(rawValue: Int(Int32(truncatingIfNeeded: varint))) {
                 value.append(v)
                 consumed = true
             }
@@ -839,10 +853,12 @@ internal struct BinaryDecoder: Decoder {
             var n: Int = 0
             var extras: [Int32]?
             let p = try getFieldBodyBytes(count: &n)
+            let ints = Varint.countVarintsInBuffer(start: p, count: n)
+            value.reserveCapacity(value.count + ints)
             var subdecoder = BinaryDecoder(forReadingFrom: p, count: n, parent: self)
             while !subdecoder.complete {
                 let u64 = try subdecoder.decodeVarint()
-                let i32 = Int32(extendingOrTruncating: u64)
+                let i32 = Int32(truncatingIfNeeded: u64)
                 if let v = E(rawValue: Int(i32)) {
                     value.append(v)
                 } else if !options.discardUnknownFields {
@@ -1401,7 +1417,7 @@ internal struct BinaryDecoder: Decoder {
         }
         let t = try decodeVarint()
         if t < UInt64(UInt32.max) {
-            guard let tag = FieldTag(rawValue: UInt32(extendingOrTruncating: t)) else {
+            guard let tag = FieldTag(rawValue: UInt32(truncatingIfNeeded: t)) else {
                 throw BinaryDecodingError.malformedProtobuf
             }
             fieldWireFormat = tag.wireFormat

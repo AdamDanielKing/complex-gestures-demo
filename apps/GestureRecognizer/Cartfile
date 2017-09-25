@@ -1,5 +1,5 @@
-github "ReactiveX/RxSwift" "swift4.0"
-github "RxSwiftCommunity/RxDataSources" ~> 1.0
-github "SnapKit/SnapKit" "swift-4"
+github "ReactiveX/RxSwift" "4.0.0-beta.0"
+github "RxSwiftCommunity/RxDataSources" "3.0.0-beta.0"
+github "SnapKit/SnapKit" ~> 4.0.0
 github "yeahdongcn/UIColor-Hex-Swift" >= 3.0.2
-github "apple/swift-protobuf" "1411925c4fc66bd772e2eced04084627288873e2"
+github "apple/swift-protobuf" "0.9.905"
