@@ -31,8 +31,12 @@ carthage bootstrap --platform iOS
 If you just want to try out GestureRecognizer, you don't need to train a new model yourself. Otherwise, set up gesturelearner with virtualenv:
 ```
 cd gesturelearner
+
 # Until coremltools supports Python 3, use Python 2.7.
 virtualenv -p $(which python2.7) venv
+# Activate the virtualenv.
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
