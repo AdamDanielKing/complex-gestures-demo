@@ -245,6 +245,10 @@ class CanvasView: UIView {
     init() {
         super.init(frame: CGRect.zero)
         
+        isAccessibilityElement = true
+        accessibilityLabel = "Drawing canvas"
+        accessibilityTraits |= UIAccessibilityTraitAllowsDirectInteraction
+        
         isMultipleTouchEnabled = true
         
         imageView = UIImageView()
