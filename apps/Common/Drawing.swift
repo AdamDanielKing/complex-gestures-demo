@@ -133,7 +133,7 @@ extension Drawing: RectangleBounded {
 }
 
 extension Drawing {
-    func fitIn(rect: CGRect) -> Drawing {
+    func fitIn(rect: CGRect) -> (Drawing, CGFloat) {
         let containerAspectRatio = rect.width / rect.height
         let boundingRect = self.boundingRect
         let boundingAspectRatio = boundingRect.width / boundingRect.height
@@ -174,7 +174,7 @@ extension Drawing {
             newDrawing.strokes.append(newStroke)
         }
         
-        return newDrawing
+        return (newDrawing, scaleFactor)
     }
     
     func rasterized() -> UIImage? {
@@ -183,14 +183,14 @@ extension Drawing {
         let margin: CGFloat = CGFloat(finalSize - fitInBoxOfSize) / 2.0
         let imageSize = CGSize(width: finalSize, height: finalSize)
         
-        let strokeWidth: CGFloat = 4
-        
-        let fitDrawing = fitIn(
+        let (fitDrawing, scaleFactor) = fitIn(
             rect: CGRect(
                 origin: CGPoint(x: margin, y: margin),
                 size: CGSize(width: fitInBoxOfSize, height: fitInBoxOfSize)
             )
         )
+        
+        let strokeWidth: CGFloat = 8.0 * scaleFactor //8 is original stroke line width
         
         UIGraphicsBeginImageContextWithOptions(imageSize, true, 1)
         
